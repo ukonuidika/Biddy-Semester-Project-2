@@ -2,14 +2,17 @@
 export default {
   content: [
     "./index.html",
-    "./auth//*.html",
-    "./post//*.html",
-    "./profile//*.html",
-    "./src//*.{js,ts,jsx,tsx}",
+    "./auth/**/*.html",
+    "./post/**/*.html",
+    "./profile/**/*.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        custom: ["TechnaSans-Regular", "sans-serif"],
+      },
+    },
   },
   plugins: [],
-}
-
+};
