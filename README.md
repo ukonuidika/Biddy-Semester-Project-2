@@ -1,6 +1,5 @@
 # **Biddy**  
-
-<img src="/public/images/logo.png" alt="Biddy Logo" style="width: 50%;">  
+ 
 
 [**Live Demo**](https://biddy-semester-project-2.netlify.app/)  
 
