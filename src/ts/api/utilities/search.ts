@@ -1,5 +1,5 @@
 import { getToken } from "../../utilities/token";
-import { API_AUCTION_POSTS, API_KEY } from "../constants";
+import { API_AUCTION_POSTS  } from "../constants";
 
 export interface Listing {
   id: string;
@@ -26,7 +26,7 @@ export async function searchListings(query: string): Promise<Listing[]> {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        "X-Noroff-API-Key": API_KEY,
+        "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
       },
     });
 

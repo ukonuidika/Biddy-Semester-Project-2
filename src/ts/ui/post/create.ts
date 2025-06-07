@@ -1,89 +1,71 @@
 import { createPost } from "../../api/post/create";
 
-interface Media {
-  url: string;
-  alt: string;
-}
-
-interface PostData {
-  title: string;
-  media: Media[];
-  description: string;
-  endsAt: string;
-}
-
 export async function onCreatePost(event: SubmitEvent): Promise<void> {
   event.preventDefault();
 
   const form = event.target as HTMLFormElement;
-  const titleInput = document.getElementById("title") as HTMLInputElement;
-  const endsAtInput = document.getElementById("endsAt") as HTMLInputElement;
-  const imageInput = document.getElementById("image") as HTMLInputElement;
-  const bodyInput = document.getElementById("content") as HTMLTextAreaElement;
-  const loadingSpinner = document.getElementById(
-    "loadingSpinner"
-  ) as HTMLElement;
-  const errorMessage = document.getElementById("errorMessage") as HTMLElement;
-  const submitButton = form.querySelector(
-    "button[type='submit']"
-  ) as HTMLButtonElement;
+  const formElements = {
+    title: document.getElementById("title") as HTMLInputElement,
+    endsAt: document.getElementById("endsAt") as HTMLInputElement,
+    image: document.getElementById("image") as HTMLInputElement,
+    content: document.getElementById("content") as HTMLTextAreaElement,
+    loadingSpinner: document.getElementById("loadingSpinner") as HTMLElement,
+    successMessage: document.getElementById("successMessage") as HTMLElement,
+    errorMessage: document.getElementById("errorMessage") as HTMLElement,
+    submitButton: form.querySelector("button[type='submit']") as HTMLButtonElement
+  };
 
-  // Ensure all required elements exist
-  if (
-    !titleInput ||
-    !endsAtInput ||
-    !imageInput ||
-    !bodyInput ||
-    !loadingSpinner ||
-    !errorMessage ||
-    !submitButton
-  ) {
-    console.error("Required form elements are missing");
+  // Validate form elements exist
+  if (Object.values(formElements).some(el => !el)) {
+    console.error("Missing required form elements");
     return;
   }
 
-  // Show loading spinner and disable the submit button
-  loadingSpinner.style.display = "block";
-  errorMessage.style.display = "none";
-  submitButton.disabled = true;
+  const { 
+    title, endsAt, image, content, 
+    loadingSpinner, successMessage, errorMessage, submitButton 
+  } = formElements;
 
-  // Construct the post data
-  const postData: PostData = {
-    title: titleInput.value.trim(),
-    media: [
-      {
-        url: imageInput.value.trim(),
-        alt: `Image for ${titleInput.value.trim()}`, // Use title for alt text
-      },
-    ],
-    description: bodyInput.value.trim(),
-    endsAt: new Date(endsAtInput.value).toISOString(), // Convert to ISO format
+  const setLoading = (isLoading: boolean) => {
+    loadingSpinner.style.display = isLoading ? "block" : "none";
+    submitButton.disabled = isLoading;
+    errorMessage.style.display = "none";
+    successMessage.style.display = "none";
+  };
+
+  const clearForm = () => {
+    form.reset();
+    successMessage.style.display = "block";
+    successMessage.innerText = "Post created successfully!";
+    setTimeout(() => successMessage.style.display = "none", 3000);
   };
 
   try {
-    const response = await createPost(postData);
+    setLoading(true);
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log("Post created:", data);
-      alert("Post created successfully!");
-      form.reset(); // Reset form inputs
-    } else {
-      const errorData = await response.json();
-      const errorMessages = errorData.errors
-        .map((e: { message: string }) => e.message)
-        .join(", ");
-      errorMessage.innerText = `Failed to create post: ${errorMessages}`;
-      errorMessage.style.display = "block";
-    }
+    const postData = {
+      title: title.value.trim(),
+      media: [{
+        url: image.value.trim(),
+        alt: `Image for ${title.value.trim()}`
+      }],
+      description: content.value.trim(),
+      endsAt: new Date(endsAt.value).toISOString()
+    };
+
+    await createPost(postData, setLoading);
+    clearForm();
+    console.log("Post created successfully");
+
   } catch (error) {
-    console.error("Error creating post:", error);
-    errorMessage.innerText = `Creating post failed: ${
-      (error as Error).message
-    }`;
+    console.error("Post creation failed:", error);
+    
+    errorMessage.innerText = error instanceof Error 
+      ? error.message 
+      : "Failed to create post. Please try again.";
     errorMessage.style.display = "block";
+
   } finally {
-    loadingSpinner.style.display = "none"; // Hide loading spinner
-    submitButton.disabled = false; // Re-enable submit button
+    setLoading(false);
   }
 }

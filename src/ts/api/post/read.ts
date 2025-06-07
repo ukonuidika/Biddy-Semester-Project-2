@@ -1,5 +1,5 @@
 import { getToken } from "../../utilities/token";
-import { API_AUCTION_POSTS, API_KEY } from "../constants";
+import { API_AUCTION_POSTS } from "../constants";
 
 const token: string | null = getToken();
 
@@ -16,7 +16,7 @@ export async function readPost(id: string): Promise<any> {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          "X-Noroff-API-Key": API_KEY,
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
         },
       }
     );

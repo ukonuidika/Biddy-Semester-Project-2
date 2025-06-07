@@ -1,5 +1,5 @@
 import { getToken } from "../../utilities/token";
-import { API_AUCTION_PROFILE, API_KEY } from "../constants";
+import { API_AUCTION_PROFILE  } from "../constants";
 
 export async function fetchCredits(username: string): Promise<number> {
   const token = getToken();
@@ -7,7 +7,7 @@ export async function fetchCredits(username: string): Promise<number> {
     const response = await fetch(`${API_AUCTION_PROFILE}/${username}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "X-Noroff-API-Key": API_KEY,
+        "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
       },
     });
 

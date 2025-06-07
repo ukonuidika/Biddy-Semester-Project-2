@@ -1,5 +1,5 @@
 import { getToken } from "../../utilities/token";
-import { API_AUCTION_PROFILE, API_KEY } from "../constants";
+import { API_AUCTION_PROFILE } from "../constants";
 
 interface ProfileData {
   bio: string;
@@ -27,7 +27,7 @@ export async function updateProfile(
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
-        "X-Noroff-API-Key": API_KEY,
+        "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(profileData),

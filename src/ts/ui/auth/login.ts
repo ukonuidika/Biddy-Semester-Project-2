@@ -1,23 +1,15 @@
 import { login } from "../../api/auth/login";
 
-// Function to handle form login
 export async function onLogin(event: SubmitEvent): Promise<void> {
   event.preventDefault();
 
   const loginForm = event.target as HTMLFormElement;
-
   const email = (loginForm.querySelector("#email") as HTMLInputElement).value;
-  const password = (loginForm.querySelector("#password") as HTMLInputElement)
-    .value;
-  const loadingSpinner = document.getElementById(
-    "loadingSpinner"
-  ) as HTMLElement | null;
-  const errorMessage = document.getElementById(
-    "errorMessage"
-  ) as HTMLElement | null;
-  const submitButton = loginForm.querySelector(
-    "button[type='submit']"
-  ) as HTMLButtonElement;
+  const password = (loginForm.querySelector("#password") as HTMLInputElement).value;
+  
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  const errorMessage = document.getElementById("errorMessage");
+  const submitButton = loginForm.querySelector("button[type='submit']") as HTMLButtonElement;
 
   // Ensure all required elements exist
   if (!loadingSpinner || !errorMessage || !submitButton) {
@@ -25,48 +17,46 @@ export async function onLogin(event: SubmitEvent): Promise<void> {
     return;
   }
 
-  // Show loading spinner and disable the submit button
-  loadingSpinner.style.display = "block";
+  // Reset UI state
+  errorMessage.textContent = "";
   errorMessage.style.display = "none";
+  loadingSpinner.style.display = "block";
   submitButton.disabled = true;
 
   try {
-    const response = await login({ email, password });
+    const result = await login(
+      { email, password },
+      (isLoading) => {
+        loadingSpinner.style.display = isLoading ? "block" : "none";
+        submitButton.disabled = isLoading;
+      }
+    );
 
-    if (response.ok) {
-      const result = await response.json();
-      console.log("Login successful:", result);
-      localStorage.setItem("username", result.data.name);
-      localStorage.setItem("token", result.data.accessToken);
-
-      window.location.replace("/");
-    } else {
-      throw new Error("Login failed");
-    }
+    console.log("Login successful:", result);
+    localStorage.setItem("username", result.data.name);
+    localStorage.setItem("token", result.data.accessToken);
+    window.location.replace("/");
+    
   } catch (error: unknown) {
-    console.error("Error:", error);
+    console.error("Login error:", error);
 
     if (error instanceof Error) {
-      errorMessage.innerText = `Login failed: ${error.message}`;
+      errorMessage.textContent = error.message;
+      errorMessage.style.display = "block";
     } else {
-      errorMessage.innerText = "An unknown error occurred";
+      errorMessage.textContent = "An unknown error occurred";
+      errorMessage.style.display = "block";
     }
-
-    errorMessage.style.display = "block";
   } finally {
-    loadingSpinner.style.display = "none"; // Hide the loading spinner
-    submitButton.disabled = false; // Re-enable submit button
+    loadingSpinner.style.display = "none";
+    submitButton.disabled = false;
   }
 }
 
-// Password visibility toggle logic
+// Password visibility toggle logic (unchanged)
 export function initializePasswordToggle() {
-  const passwordInput = document.getElementById(
-    "password"
-  ) as HTMLInputElement | null;
-  const togglePasswordButton = document.getElementById(
-    "toggle-password"
-  ) as HTMLElement | null;
+  const passwordInput = document.getElementById("password") as HTMLInputElement | null;
+  const togglePasswordButton = document.getElementById("toggle-password") as HTMLElement | null;
 
   if (!passwordInput || !togglePasswordButton) {
     throw new Error("Required elements not found in the DOM");

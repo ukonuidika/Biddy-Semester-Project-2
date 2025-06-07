@@ -1,5 +1,5 @@
 import { getToken } from "../../utilities/token";
-import { API_AUCTION_POSTS, API_AUCTION_PROFILE, API_KEY } from "../constants";
+import { API_AUCTION_POSTS, API_AUCTION_PROFILE} from "../constants";
 
 const token = getToken();
 
@@ -25,7 +25,7 @@ export async function readProfiles({ limit, page }: Props) {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-          "X-Noroff-API-Key": API_KEY,
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
         },
       }
     );
@@ -50,7 +50,7 @@ export async function liveGridreadProfiles({ limit, page }: Props) {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-          "X-Noroff-API-Key": API_KEY,
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
         },
       }
     );
@@ -83,7 +83,7 @@ export async function winGridreadProfiles({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-          "X-Noroff-API-Key": API_KEY,
+          "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
         },
       }
     );
@@ -109,7 +109,7 @@ export async function readProfile(
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      "X-Noroff-API-Key": API_KEY,
+      "X-Noroff-API-Key": import.meta.env.VITE_API_KEY,
     },
   });
 
